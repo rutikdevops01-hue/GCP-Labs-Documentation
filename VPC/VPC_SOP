@@ -1,0 +1,111 @@
+GCP VPC Creation Guide (Console + CLI)
+
+Author: Rutik DevOps Project: labs-487521 Date: 2026-02-15
+
+============================================================ PART 1:
+CREATE VPC MANUALLY USING GCP CONSOLE
+============================================================
+
+Step 1: Login to GCP Console
+
+1.  Go to https://console.cloud.google.com
+2.  Select the correct project (labs-487521)
+
+Step 2: Navigate to VPC
+
+☰ Navigation Menu → VPC Network → VPC Networks
+
+Step 3: Click “Create VPC Network”
+
+Step 4: Configure VPC
+
+Name: my-custom-vpc Subnet creation mode: Custom
+
+Best Practice: ✔ Always use Custom mode for production ✔ Avoid Auto mode
+for enterprise environments
+
+Step 5: Add Subnet
+
+Subnet Name: subnet-us-central1 Region: us-central1 IP Range:
+10.0.0.0/24
+
+(Optional additional subnet) Subnet Name: subnet-asia-south1 Region:
+asia-south1 IP Range: 10.1.0.0/24
+
+Step 6: Firewall Rules
+
+Do NOT enable default allow-all rules. Create firewall rules separately.
+
+Click CREATE.
+
+============================================================ PART 2:
+CREATE VPC USING CLI (Professional Method)
+============================================================
+
+Step 1: Create Custom VPC
+
+gcloud compute networks create my-custom-vpc –subnet-mode=custom
+
+Step 2: Create First Subnet
+
+gcloud compute networks subnets create subnet-us-central1
+–network=my-custom-vpc –region=us-central1 –range=10.0.0.0/24
+
+Step 3: Create Second Subnet
+
+gcloud compute networks subnets create subnet-asia-south1
+–network=my-custom-vpc –region=asia-south1 –range=10.1.0.0/24
+
+Step 4: Verify Networks
+
+gcloud compute networks list
+
+Step 5: Verify Subnets
+
+gcloud compute networks subnets list
+
+Count total subnets: gcloud compute networks subnets list
+–format=“value(name)” | wc -l
+
+Count only custom VPC subnets: gcloud compute networks subnets list
+–filter=“network:my-custom-vpc” –format=“value(name)” | wc -l
+
+============================================================ BEST
+PRACTICES FOR VPC DESIGN
+============================================================
+
+1.  Use Custom Mode VPC
+    -   Full control over IP ranges
+    -   Avoid automatic subnet sprawl
+2.  Use RFC1918 Private IP Ranges
+    -   10.0.0.0/8
+    -   172.16.0.0/12
+    -   192.168.0.0/16
+3.  Plan CIDR Allocation Properly
+    -   Avoid overlapping ranges
+    -   Leave room for future expansion
+4.  Use Regional Subnet Strategy
+    -   Separate subnets for production, staging, dev
+5.  Apply Firewall with Least Privilege
+    -   Do NOT allow 0.0.0.0/0 for SSH/RDP in production
+    -   Restrict SSH to your public IP (/32)
+6.  Use Network Tags
+    -   Apply firewall rules to tagged instances
+7.  Monitor Subnet Utilization
+    -   Track IP usage regularly
+
+============================================================ NETWORK
+ARCHITECTURE FLOW
+============================================================
+
+Project | |– VPC (Global) | |– Subnet (Regional) | |– VM Instances |–
+Firewall Rules |– Routes
+
+============================================================ SUMMARY
+============================================================
+
+✔ Created Custom VPC manually via console ✔ Created VPC via CLI ✔
+Created multiple regional subnets ✔ Verified using gcloud commands ✔
+Learned production best practices
+
+End of Document
